@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ROOT // SYSTEM KERNEL OVERRIDE</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        body, html {
+            background-color: #000000;
+            color: #ff0033;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Full Screen Matrix Rain Layer */
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.2;
+            pointer-events: none;
+        }
+
+        /* Full Screen Terminal Shell */
+        .terminal-shell {
+            position: relative;
+            z-index: 2;
+            width: 95vw;
+            height: 92vh;
+            max-width: 900px;
+            max-height: 700px;
+            background: rgba(3, 0, 1, 0.96);
+            border: 2px solid #ff0033;
+            box-shadow: 0 0 50px rgba(255, 0, 51, 0.4), inset 0 0 30px rgba(255, 0, 51, 0.2);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-radius: 8px;
+        }
+
+        .terminal-shell.success-mode {
+            border-color: #00ff66;
+            box-shadow: 0 0 50px rgba(0, 255, 102, 0.4), inset 0 0 30px rgba(0, 255, 102, 0.2);
+        }
+
+        .slide {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            justify-content: space-between;
+        }
+
+        .slide.active {
+            display: flex;
+            animation: glitchFade 0.5s ease-out forwards;
+        }
+
+        @keyframes glitchFade {
+            0% { opacity: 0; transform: scale(0.97); filter: blur(2px); }
+            100% { opacity: 1; transform: scale(1); filter: blur(0); }
+        }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px dashed rgba(255, 0, 51, 0.5);
+            padding-bottom: 15px;
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .success-mode .status-bar {
+            border-bottom-color: rgba(0, 255, 102, 0.5);
+            color: #00ff66;
+        }
+
+        .live-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pulse-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #ff0033;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #ff0033;
+            animation: pulse 1s infinite alternate;
+        }
+
+        .success-mode .pulse-dot {
+            background-color: #00ff66;
+            box-shadow: 0 0 10px #00ff66;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.2; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin: auto 0;
+        }
+
+        h1 {
+            font-size: clamp(22px, 4vw, 32px);
+            color: #ffffff;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px rgba(255,255,255,0.4);
+        }
+
+        p {
+            font-size: clamp(14px, 2vw, 17px);
+            line-height: 1.6;
+            color: #ff99aa;
+        }
+
+        .success-mode p {
+            color: #99ffbb;
+        }
+
+        .console-screen {
+            background: #000000;
+            border: 1px solid rgba(255, 0, 51, 0.4);
+            padding: 15px;
+            height: 160px;
+            overflow-y: hidden;
+            font-size: 13px;
+            color: #ff3344;
+            border-radius: 4px;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.9);
+        }
+
+        .success-mode .console-screen {
+            border-color: rgba(0, 255, 102, 0.4);
+            color: #00ff66;
+        }
+
+        .progress-box {
+            width: 100%;
+            background: #110002;
+            border: 1px solid #ff0033;
+            height: 28px;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #880011, #ff0033);
+            transition: width 20s linear; /* Exactly 20 seconds duration */
+        }
+
+        .progress-label {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            line-height: 28px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #ffffff;
+            letter-spacing: 1px;
+        }
+
+        .exec-btn {
+            background: transparent;
+            border: 2px solid #ff0033;
+            color: #ff0033;
+            padding: 18px;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .exec-btn:hover {
+            background: #ff0033;
+            color: #000;
+            box-shadow: 0 0 30px #ff0033;
+        }
+
+        .success-mode .exec-btn {
+            border-color: #00ff66;
+            color: #00ff66;
+        }
+
+        .success-mode .exec-btn:hover {
+            background: #00ff66;
+            color: #000;
+            box-shadow: 0 0 30px #00ff66;
+        }
+
+        .reveal-box {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .reveal-box h2 {
+            font-size: clamp(28px, 5vw, 42px);
+            color: #00ff66;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(0,255,102,0.6);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Matrix Background Canvas -->
+    <canvas id="matrix"></canvas>
+
+    <div class="terminal-shell" id="shell">
+        
+        <!-- SLIDE 1: THE INITIATION / EXTREME FEAR -->
+        <div class="slide active" id="slide1">
+            <div class="status-bar">
+                <div class="live-badge"><div class="pulse-dot"></div> SECURE_NODE // ALERT_LVL_9</div>
+                <span>[IP: 192.168.4.12]</span>
+            </div>
+            <div class="main-content">
+                <h1>CRITICAL KERNEL BREACH</h1>
+                <p>Warning: Unrecognized intrusion signature detected. Remote node connection established. Your device hardware specifications, location cluster, and session tokens are actively being mirrored.</p>
+                <div class="console-screen">
+                    > Initializing socket tunnel... [CONNECTED]<br>
+                    > Intercepting hardware serial keys... [OK]<br>
+                    > Status: TARGET LOCKED. Authorization prompt required to avoid deletion.
+                </div>
+            </div>
+            <button class="exec-btn" onclick="nextSlide()">BYPASS FIREWALL &amp; OVERRIDE</button>
+        </div>
+
+        <!-- SLIDE 2: THE 20-SECOND INTENSE DEEP SCAN -->
+        <div class="slide" id="slide2">
+            <div class="status-bar">
+                <div class="live-badge"><div class="pulse-dot"></div> DEEP_EXTRACTION_ACTIVE</div>
+                <span>[PORT: 443]</span>
+            </div>
+            <div class="main-content">
+                <h1>DECRYPTION &amp; SYSTEM OVERRIDE</h1>
+                <p>Extracting local cache directories, Instagram authentication cookies, and mounting front camera stream drivers...</p>
+                <div class="console-screen" id="logBox">
+                    > Hooking into root shell processes...<br>
+                    > Dumping internal storage files...<br>
+                    > Initializing continuous sensor feed...
+                </div>
+                <div class="progress-box">
+                    <div class="progress-label" id="progressText">0% EXECUTING...</div>
+                    <div class="progress-fill" id="fillBar"></div>
+                </div>
+            </div>
+            <button class="exec-btn" id="finishBtn" style="display:none;" onclick="nextSlide()">DECRYPT FINAL PAYLOAD</button>
+        </div>
+
+        <!-- SLIDE 3: THE EPIC PRANK REVEAL -->
+        <div class="slide" id="slide3">
+            <div class="status-bar">
+                <div class="live-badge"><div class="pulse-dot"></div> OPERATION_SUCCESSFUL</div>
+                <span>[SECURE CHANNEL]</span>
+            </div>
+            <div class="main-content reveal-box">
+                <h2>GOTCHA! 😄🎯</h2>
+                <p>Relax completely—your phone and files are 100% safe! You just fell for a simulation prank of 30 oct by anfal ahmed😅.
+</p>
+            </div>
+            <button class="exec-btn" onclick="resetAll()">REPLAY SIMULATION</button>
+        </div>
+
+    </div>
+
+    <script>
+        // Matrix Background Effect
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        const chars = '01ABCDEFGHIJKLMNOPQRSTUVWXYZ@#$%&*+-/\\<>?';
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = Array.from({ length: columns }).fill(1);
+
+        function renderMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#ff0033';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars.charAt(Math.floor(Math.random() * chars.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+        setInterval(renderMatrix, 35);
+
+        // Slide Controller logic with 20-second precise transition
+        let current = 1;
+        let timer = null;
+
+        function nextSlide() {
+            document.getElementById(`slide${current}`).classList.remove('active');
+            current++;
+            const target = document.getElementById(`slide${current}`);
+            if (target) {
+                target.classList.add('active');
+
+                if (current === 2) {
+                    const fill = document.getElementById('fillBar');
+                    const textLbl = document.getElementById('progressText');
+                    const box = document.getElementById('logBox');
+                    
+                    fill.style.width = '100%'; // Exactly 20 seconds CSS transition
+
+                    let start = Date.now();
+                    let totalTime = 20000; // 20 seconds
+
+                    timer = setInterval(() => {
+                        let passed = Date.now() - start;
+                        let pct = Math.min(Math.floor((passed / totalTime) * 100), 100);
+                        textLbl.innerText = pct + '% EXECUTING...';
+
+                        if (pct === 30) {
+                            box.innerHTML += '<br>> Bypassing security kernel restrictions... [OK]';
+                            box.scrollTop = box.scrollHeight;
+                        } else if (pct === 60) {
+                            box.innerHTML += '<br>> Uploading override script to remote cluster...';
+                            box.scrollTop = box.scrollHeight;
+                        } else if (pct === 90) {
+                            box.innerHTML += '<br>> Acquiring master administrator permissions...';
+                            box.scrollTop = box.scrollHeight;
+                        } else if (pct >= 100) {
+                            clearInterval(timer);
+                        }
+                    }, 100);
+
+                    // Reveal button precisely after 20 seconds
+                    setTimeout(() => {
+                        document.getElementById('finishBtn').style.display = 'block';
+                        box.innerHTML += '<br>> <span style="color:#ff0033; font-weight:bold;">[SUCCESS] Total root control achieved!</span>';
+                        box.scrollTop = box.scrollHeight;
+                        textLbl.innerText = '100% COMPLETE - READY';
+                    }, 20000);
+                }
+
+                if (current === 3) {
+                    document.getElementById('shell').classList.add('success-mode');
+                }
+            }
+        }
+
+        function resetAll() {
+            clearInterval(timer);
+            document.getElementById(`slide${current}`).classList.remove('active');
+            current = 1;
+            document.getElementById('shell').classList.remove('success-mode');
+            document.getElementById('slide1').classList.add('active');
+            document.getElementById('fillBar').style.width = '0%';
+            document.getElementById('progressText').innerText = '0% EXECUTING...';
+            document.getElementById('finishBtn').style.display = 'none';
+            document.getElementById('logBox').innerHTML = `
+                > Hooking into root shell processes...<br>
+                > Dumping internal storage files...<br>
+                > Initializing continuous sensor feed...
+            `;
+        }
+    </script>
+</body>
+</html>
