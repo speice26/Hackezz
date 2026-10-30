@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Security Gateway</title>
+    <title>SECURE KERNEL // ACCESS OVERRIDE</title>
     <style>
         * {
             box-sizing: border-box;
@@ -13,198 +13,322 @@
         }
 
         body {
-            background-color: #050505;
+            background-color: #020202;
             color: #00ff66;
             height: 100vh;
+            width: 100vw;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            cursor: pointer;
+            position: relative;
+        }
+
+        /* Matrix Canvas Background */
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.25;
+            pointer-events: none;
         }
 
         .container {
-            width: 90%;
-            max-width: 500px;
-            padding: 30px;
-            border: 2px solid #00ff66;
-            background: rgba(0, 20, 5, 0.9);
-            box-shadow: 0 0 25px rgba(0, 255, 102, 0.3);
-            border-radius: 8px;
+            width: 92%;
+            max-width: 750px;
+            height: 82vh;
+            max-height: 600px;
+            padding: 40px;
+            border: 2px solid #ff0033;
+            background: rgba(5, 2, 2, 0.95);
+            box-shadow: 0 0 40px rgba(255, 0, 51, 0.4), inset 0 0 25px rgba(255, 0, 51, 0.2);
+            border-radius: 6px;
             position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .container.green-theme {
+            border-color: #00ff66;
+            box-shadow: 0 0 40px rgba(0, 255, 102, 0.4), inset 0 0 25px rgba(0, 255, 102, 0.2);
         }
 
         .slide {
             display: none;
             flex-direction: column;
-            gap: 20px;
+            height: 100%;
+            justify-content: space-between;
         }
 
         .slide.active {
             display: flex;
+            animation: fadeInSlide 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeInSlide {
+            0% { opacity: 0; transform: translateY(15px) scale(0.98); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .header {
-            font-size: 14px;
-            color: #ff3333;
-            letter-spacing: 2px;
+            font-size: 15px;
+            color: #ff0033;
+            letter-spacing: 3px;
             text-transform: uppercase;
             font-weight: bold;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            border-bottom: 1px dashed rgba(255, 0, 51, 0.4);
+            padding-bottom: 15px;
+        }
+
+        .green-theme .header {
+            color: #00ff66;
+            border-bottom-color: rgba(0, 255, 102, 0.4);
         }
 
         .blinking-dot {
-            width: 10px;
-            height: 10px;
-            background-color: #ff3333;
+            width: 12px;
+            height: 12px;
+            background-color: #ff0033;
             border-radius: 50%;
-            animation: blink 1s infinite;
+            animation: blink 0.8s infinite;
+        }
+
+        .green-theme .blinking-dot {
+            background-color: #00ff66;
         }
 
         @keyframes blink {
-            0% { opacity: 1; }
-            50% { opacity: 0.2; }
-            100% { opacity: 1; }
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.1; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .content-body {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            margin: auto 0;
         }
 
         h1 {
-            font-size: 20px;
+            font-size: 26px;
             color: #ffffff;
-            margin-bottom: 5px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
         }
 
         p {
-            font-size: 14px;
+            font-size: 15px;
             line-height: 1.6;
-            color: #00cc55;
+            color: #ff9999;
+        }
+
+        .green-theme p {
+            color: #88ffbb;
         }
 
         .terminal-box {
-            background: #000;
-            border: 1px dashed #00ff66;
-            padding: 15px;
-            font-size: 12px;
-            color: #00ff66;
-            height: 100px;
+            background: #000000;
+            border: 1px solid rgba(255, 0, 51, 0.5);
+            padding: 18px;
+            font-size: 13px;
+            color: #ff3333;
+            height: 140px;
             overflow-y: hidden;
-            position: relative;
+            border-radius: 4px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
         }
 
-        .progress-bar-container {
+        .green-theme .terminal-box {
+            border-color: rgba(0, 255, 102, 0.5);
+            color: #00ff66;
+        }
+
+        .progress-container {
             width: 100%;
-            background: #001a09;
-            border: 1px solid #00ff66;
-            height: 20px;
+            background: #110002;
+            border: 1px solid #ff0033;
+            height: 24px;
             border-radius: 4px;
             overflow: hidden;
-            margin-top: 10px;
+            position: relative;
         }
 
         .progress-bar {
             width: 0%;
             height: 100%;
-            background: #00ff66;
-            transition: width 2.5s ease-in-out;
+            background: linear-gradient(90deg, #990011, #ff0033);
+            transition: width 20s linear; /* Exactly 20 seconds duration */
+        }
+
+        .progress-text {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            font-size: 11px;
+            line-height: 24px;
+            color: #ffffff;
+            font-weight: bold;
+            letter-spacing: 1px;
         }
 
         .action-btn {
             background: transparent;
-            border: 2px solid #00ff66;
-            color: #00ff66;
-            padding: 12px;
-            font-size: 14px;
+            border: 2px solid #ff0033;
+            color: #ff0033;
+            padding: 16px;
+            font-size: 15px;
             font-weight: bold;
             text-transform: uppercase;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-top: 10px;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
+            border-radius: 4px;
+            text-align: center;
         }
 
         .action-btn:hover {
-            background: #00ff66;
+            background: #ff0033;
             color: #000;
-            box-shadow: 0 0 15px #00ff66;
+            box-shadow: 0 0 25px #ff0033;
         }
 
-        /* Slide 3 Reveal Styling */
-        .slide.reveal {
-            border-color: #00bfff;
-            color: #00bfff;
+        .green-theme .action-btn {
+            border-color: #00ff66;
+            color: #00ff66;
         }
-        .slide.reveal .header {
-            color: #ff00ff;
+
+        .green-theme .action-btn:hover {
+            background: #00ff66;
+            color: #000;
+            box-shadow: 0 0 25px #00ff66;
         }
-        .slide.reveal .blinking-dot {
-            background-color: #ff00ff;
-        }
+
+        /* Slide 3 Reveal Customization */
         .reveal-box {
             text-align: center;
             padding: 20px 0;
         }
         .reveal-box h2 {
-            font-size: 24px;
-            color: #ffffff;
-            margin-bottom: 10px;
+            font-size: 32px;
+            color: #00ff66;
+            margin-bottom: 15px;
+            text-shadow: 0 0 15px rgba(0,255,102,0.6);
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- SLIDE 1 -->
+    <!-- Matrix Background Effect -->
+    <canvas id="matrixCanvas"></canvas>
+
+    <div class="container" id="mainContainer">
+        
+        <!-- SLIDE 1: THE FEAR / HOOK -->
         <div class="slide active" id="slide1">
             <div class="header">
                 <div class="blinking-dot"></div>
-                Security Protocol Alert
+                CRITICAL SECURITY BREACH DETECTED
             </div>
-            <h1>UNAUTHORIZED ACCESS</h1>
-            <p>Incoming connection traced. Device signature and geolocation handshake detected from remote node.</p>
-            <div class="terminal-box">
-                > Initializing secure socket...<br>
-                > Tracing IP route: 192.168.43.1<br>
-                > Status: WAITING FOR USER AUTHORIZATION...
+            <div class="content-body">
+                <h1>KERNEL EXPLOIT INITIATED</h1>
+                <p>Warning: Unauthorized remote connection packet intercepted. Your device signature, geolocation node, and hardware MAC address have been mirrored to an external server.</p>
+                <div class="terminal-box" id="log1">
+                    > Initializing kernel handshake... [OK]<br>
+                    > Tracing incoming packet origin... [FOUND]<br>
+                    > Status: TARGET DEVICE LOCKED. Awaiting authorization sequence...
+                </div>
             </div>
-            <button class="action-btn" onclick="nextSlide()">Authorize Device</button>
+            <button class="action-btn" onclick="nextSlide()">BYPASS FIREWALL &amp; HALT</button>
         </div>
 
-        <!-- SLIDE 2 -->
+        <!-- SLIDE 2: THE 20-SECOND INTENSE FILL -->
         <div class="slide" id="slide2">
             <div class="header">
                 <div class="blinking-dot"></div>
-                System Override in Progress
+                DATA EXTRACTION PROTOCOL ACTIVE
             </div>
-            <h1>EXTRACTING DATA</h1>
-            <p>Bypassing device encryption and accessing local cache memories...</p>
-            <div class="terminal-box" id="matrixLog">
-                > Accessing Instagram session cookies...<br>
-                > Dumping gallery thumbnails...<br>
-                > Initializing front camera stream...
+            <div class="content-body">
+                <h1>DEEP SYSTEM PENETRATION</h1>
+                <p>Extracting local memory caches, active browser cookies, and initializing front-facing sensor stream...</p>
+                <div class="terminal-box" id="matrixLog">
+                    > Hooking into system process layer...<br>
+                    > Dumping gallery thumbnails &amp; metadata...<br>
+                    > Accessing camera sensor drivers...
+                </div>
+                <div class="progress-container">
+                    <div class="progress-text" id="progressPercent">0% EXECUTING...</div>
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
             </div>
-            <div class="progress-bar-container">
-                <div class="progress-bar" id="progressBar"></div>
-            </div>
-            <button class="action-btn" id="btn2" style="display:none;" onclick="nextSlide()">Decrypt Final Payload</button>
+            <button class="action-btn" id="btn2" style="display:none;" onclick="nextSlide()">DECRYPT FINAL PAYLOAD</button>
         </div>
 
-        <!-- SLIDE 3 (THE REVEAL) -->
-        <div class="slide reveal" id="slide3">
+        <!-- SLIDE 3: THE EPIC PRANK REVEAL -->
+        <div class="slide" id="slide3">
             <div class="header">
                 <div class="blinking-dot"></div>
-                Prank Executed Successfully
+                OPERATION COMPLETE // SECURE CHANNEL
             </div>
-            <div class="reveal-box">
-                <h2>GOTCHA! 😄</h2>
-                <p>Relax, your phone is completely safe! You've just been officially pranked by instaz user "anfal ahmed"😅.</p>
+            <div class="content-body reveal-box">
+                <h2>GOTCHA! 😄🎯</h2>
+                <p>Relax! Your device is completely safe and secure. You just got hit with the ultimate professional hacker prank simulation. Share this link with someone else and scare the living daylights out of them!</p>
             </div>
-            <button class="action-btn" style="border-color: #00bfff; color: #00bfff;" onclick="resetPrank()">Replay Prank</button>
+            <button class="action-btn" onclick="resetPrank()">REPLAY SIMULATION</button>
         </div>
+
     </div>
 
     <script>
+        // Matrix Background Animation Script
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+-<>?/\\|{}[]';
+        const fontSize = 14;
+        let columns = canvas.width / fontSize;
+        const drops = [];
+        for (let x = 0; x < columns; x++) {
+            drops[x] = 1;
+        }
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(2, 2, 2, 0.08)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#00ff66';
+            ctx.font = fontSize + '-px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = characters.charAt(Math.floor(Math.random() * characters.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 35);
+
+        // Slide Controller Logic
         let currentSlide = 1;
+        let progressInterval;
 
         function nextSlide() {
             document.getElementById(`slide${currentSlide}`).classList.remove('active');
@@ -214,27 +338,67 @@
             if (nextElement) {
                 nextElement.classList.add('active');
                 
-                // If we enter slide 2, trigger the auto progress bar animation
+                // If entering slide 2, trigger the 20-second progress bar & live logs
                 if (currentSlide === 2) {
-                    setTimeout(() => {
-                        document.getElementById('progressBar').style.width = '100%';
-                    }, 200);
+                    const bar = document.getElementById('progressBar');
+                    const textPercent = document.getElementById('progressPercent');
+                    const matrixLog = document.getElementById('matrixLog');
+                    
+                    bar.style.width = '100%'; // Takes exactly 20 seconds via CSS transition
 
-                    // Show the button after the progress bar finishes filling
+                    let startTime = Date.now();
+                    let duration = 20000; // 20 seconds in milliseconds
+
+                    // Counter & live terminal text generator
+                    progressInterval = setInterval(() => {
+                        let elapsed = Date.now() - startTime;
+                        let percentage = Math.min(Math.floor((elapsed / duration) * 100), 100);
+                        textPercent.innerText = percentage + '% EXECUTING...';
+
+                        if (percentage === 25) {
+                            matrixLog.innerHTML += '<br>> Bypassing local firewall security nodes... [OK]';
+                            matrixLog.scrollTop = matrixLog.scrollHeight;
+                        } else if (percentage === 50) {
+                            matrixLog.innerHTML += '<br>> Uploading rootkit payload to secure cluster...';
+                            matrixLog.scrollTop = matrixLog.scrollHeight;
+                        } else if (percentage === 75) {
+                            matrixLog.innerHTML += '<br>> Acquiring permanent device backdoor access...';
+                            matrixLog.scrollTop = matrixLog.scrollHeight;
+                        } else if (percentage >= 100) {
+                            clearInterval(progressInterval);
+                        }
+                    }, 100);
+
+                    // Reveal the button exactly after 20 seconds
                     setTimeout(() => {
                         document.getElementById('btn2').style.display = 'block';
-                        document.getElementById('matrixLog').innerHTML += '<br>> [SUCCESS] Target acquired! Ready.';
-                    }, 2600);
+                        matrixLog.innerHTML += '<br>> <span style="color:#00ff66;">[SUCCESS] Full root privileges granted!</span>';
+                        matrixLog.scrollTop = matrixLog.scrollHeight;
+                        textPercent.innerText = '100% COMPLETE - READY';
+                    }, 20000);
+                }
+
+                // If entering Slide 3, switch the container theme to green celebratory mode
+                if (currentSlide === 3) {
+                    document.getElementById('mainContainer').classList.add('green-theme');
                 }
             }
         }
 
         function resetPrank() {
+            clearInterval(progressInterval);
             document.getElementById(`slide${currentSlide}`).classList.remove('active');
             currentSlide = 1;
+            document.getElementById('mainContainer').classList.remove('green-theme');
             document.getElementById('slide1').classList.add('active');
             document.getElementById('progressBar').style.width = '0%';
+            document.getElementById('progressPercent').innerText = '0% EXECUTING...';
             document.getElementById('btn2').style.display = 'none';
+            document.getElementById('matrixLog').innerHTML = `
+                > Hooking into system process layer...<br>
+                > Dumping gallery thumbnails &amp; metadata...<br>
+                > Accessing camera sensor drivers...
+            `;
         }
     </script>
 </body>
