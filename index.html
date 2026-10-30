@@ -172,7 +172,7 @@
             width: 0%;
             height: 100%;
             background: linear-gradient(90deg, #880011, #ff0033);
-            transition: width 20s linear; /* Exactly 20 seconds duration */
+            transition: width 20s linear;
         }
 
         .progress-label {
@@ -256,7 +256,7 @@
             <button class="exec-btn" onclick="nextSlide()">BYPASS FIREWALL &amp; OVERRIDE</button>
         </div>
 
-        <!-- SLIDE 2: THE 20-SECOND INTENSE DEEP SCAN (WITH BACK TRAP) -->
+        <!-- SLIDE 2: THE 20-SECOND INTENSE DEEP SCAN (LOCKED DOWN) -->
         <div class="slide" id="slide2">
             <div class="status-bar">
                 <div class="live-badge"><div class="pulse-dot"></div> DEEP_EXTRACTION_ACTIVE</div>
@@ -286,7 +286,7 @@
             </div>
             <div class="main-content reveal-box">
                 <h2>GOTCHA! 😄🎯</h2>
-                <p>Relax completely—your phone and files are 100% safe! You just fell for a professional-grade hacker simulation prank. Send this link to your friends and watch them panic!</p>
+                <p>Relax completely—your phone and files are 100% safe! You just fell for  simulation made by anfal ahmed.!</p>
             </div>
             <button class="exec-btn" onclick="resetAll()">REPLAY SIMULATION</button>
         </div>
@@ -327,35 +327,41 @@
         }
         setInterval(renderMatrix, 35);
 
-        // Slide Controller logic with Back-Button Trap on Slide 2
+        // Slide Controller logic with Strict Hard Lockdown on Slide 2
         let current = 1;
         let timer = null;
 
-        // Trap the browser history state so back button / swipe back pulls them right back in
+        // Pre-seed history stack so back button traps instantly on Slide 2
+        history.pushState({slide: 1}, '', window.location.href);
+
         window.addEventListener('popstate', function (event) {
             if (current === 2) {
-                // Force history state forward again to trap them on slide 2
-                history.pushState(null, null, window.location.href);
-                alert("⚠️ WARNING: SYSTEM LOCKED. CANNOT ABORT MID-PROCESS!");
+                // Force history back forward immediately and block exit
+                history.pushState({slide: 2}, '', window.location.href);
+                alert("⚠️ FATAL ERROR: PROCESS CANNOT BE TERMINATED MID-SCAN!");
+            } else if (current === 3) {
+                // Allow normal back navigation on slide 3 if they want
+                history.back();
             }
         });
 
         function nextSlide() {
             document.getElementById(`slide${current}`).classList.remove('active');
             current++;
+            
+            // Push state for slide transition tracking
+            history.pushState({slide: current}, '', window.location.href);
+
             const target = document.getElementById(`slide${current}`);
             if (target) {
                 target.classList.add('active');
 
                 if (current === 2) {
-                    // Push a state into history so hitting back triggers our popstate trap
-                    history.pushState(null, null, window.location.href);
-
                     const fill = document.getElementById('fillBar');
                     const textLbl = document.getElementById('progressText');
                     const box = document.getElementById('logBox');
                     
-                    fill.style.width = '100%'; // Exactly 20 seconds CSS transition
+                    fill.style.width = '100%'; // Exactly 20 seconds transition
 
                     let start = Date.now();
                     let totalTime = 20000; // 20 seconds
@@ -379,7 +385,7 @@
                         }
                     }, 100);
 
-                    // Reveal button precisely after 20 seconds
+                    // Reveal finish button after 20 seconds
                     setTimeout(() => {
                         document.getElementById('finishBtn').style.display = 'block';
                         box.innerHTML += '<br>> <span style="color:#ff0033; font-weight:bold;">[SUCCESS] Total root control achieved!</span>';
