@@ -23,7 +23,6 @@
             align-items: center;
         }
 
-        /* Full Screen Matrix Rain Layer */
         canvas {
             position: fixed;
             top: 0;
@@ -35,7 +34,6 @@
             pointer-events: none;
         }
 
-        /* Full Screen Terminal Shell */
         .terminal-shell {
             position: relative;
             z-index: 2;
@@ -229,16 +227,29 @@
             margin-bottom: 20px;
             text-shadow: 0 0 20px rgba(0,255,102,0.6);
         }
+
+        /* Anti-Escape Lockdown Shield for Slide 2 */
+        #lockdownOverlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(255, 0, 0, 0.15);
+            z-index: 999;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Matrix Background Canvas -->
+    <div id="lockdownOverlay"></div>
     <canvas id="matrix"></canvas>
 
     <div class="terminal-shell" id="shell">
         
-        <!-- SLIDE 1: THE INITIATION / EXTREME FEAR -->
+        <!-- SLIDE 1 -->
         <div class="slide active" id="slide1">
             <div class="status-bar">
                 <div class="live-badge"><div class="pulse-dot"></div> SECURE_NODE // ALERT_LVL_9</div>
@@ -256,7 +267,7 @@
             <button class="exec-btn" onclick="nextSlide()">BYPASS FIREWALL &amp; OVERRIDE</button>
         </div>
 
-        <!-- SLIDE 2: THE 20-SECOND INTENSE DEEP SCAN (LOCKED DOWN) -->
+        <!-- SLIDE 2 -->
         <div class="slide" id="slide2">
             <div class="status-bar">
                 <div class="live-badge"><div class="pulse-dot"></div> DEEP_EXTRACTION_ACTIVE</div>
@@ -278,7 +289,7 @@
             <button class="exec-btn" id="finishBtn" style="display:none;" onclick="nextSlide()">DECRYPT FINAL PAYLOAD</button>
         </div>
 
-        <!-- SLIDE 3: THE EPIC PRANK REVEAL -->
+        <!-- SLIDE 3 -->
         <div class="slide" id="slide3">
             <div class="status-bar">
                 <div class="live-badge"><div class="pulse-dot"></div> OPERATION_SUCCESSFUL</div>
@@ -286,7 +297,7 @@
             </div>
             <div class="main-content reveal-box">
                 <h2>GOTCHA! 😄🎯</h2>
-                <p>Relax completely—your phone and files are 100% safe! You just fell for  simulation made by anfal ahmed.!</p>
+                <p>Relax completely—your phone and files are 100% safe! You just fell for a professional-grade hacker simulation prank. Send this link to your friends and watch them panic!</p>
             </div>
             <button class="exec-btn" onclick="resetAll()">REPLAY SIMULATION</button>
         </div>
@@ -294,7 +305,6 @@
     </div>
 
     <script>
-        // Matrix Background Effect
         const canvas = document.getElementById('matrix');
         const ctx = canvas.getContext('2d');
 
@@ -327,21 +337,14 @@
         }
         setInterval(renderMatrix, 35);
 
-        // Slide Controller logic with Strict Hard Lockdown on Slide 2
         let current = 1;
         let timer = null;
 
-        // Pre-seed history stack so back button traps instantly on Slide 2
-        history.pushState({slide: 1}, '', window.location.href);
-
-        window.addEventListener('popstate', function (event) {
+        // Extra protection: Block leaving and force focus on Slide 2
+        window.addEventListener('beforeunload', function (e) {
             if (current === 2) {
-                // Force history back forward immediately and block exit
-                history.pushState({slide: 2}, '', window.location.href);
-                alert("⚠️ FATAL ERROR: PROCESS CANNOT BE TERMINATED MID-SCAN!");
-            } else if (current === 3) {
-                // Allow normal back navigation on slide 3 if they want
-                history.back();
+                e.preventDefault();
+                e.returnValue = '';
             }
         });
 
@@ -349,22 +352,22 @@
             document.getElementById(`slide${current}`).classList.remove('active');
             current++;
             
-            // Push state for slide transition tracking
-            history.pushState({slide: current}, '', window.location.href);
-
             const target = document.getElementById(`slide${current}`);
             if (target) {
                 target.classList.add('active');
 
                 if (current === 2) {
+                    // Activate lockdown overlay shield
+                    document.getElementById('lockdownOverlay').style.display = 'block';
+
                     const fill = document.getElementById('fillBar');
                     const textLbl = document.getElementById('progressText');
                     const box = document.getElementById('logBox');
                     
-                    fill.style.width = '100%'; // Exactly 20 seconds transition
+                    fill.style.width = '100%'; // 20 seconds duration
 
                     let start = Date.now();
-                    let totalTime = 20000; // 20 seconds
+                    let totalTime = 20000;
 
                     timer = setInterval(() => {
                         let passed = Date.now() - start;
@@ -385,7 +388,6 @@
                         }
                     }, 100);
 
-                    // Reveal finish button after 20 seconds
                     setTimeout(() => {
                         document.getElementById('finishBtn').style.display = 'block';
                         box.innerHTML += '<br>> <span style="color:#ff0033; font-weight:bold;">[SUCCESS] Total root control achieved!</span>';
@@ -395,6 +397,8 @@
                 }
 
                 if (current === 3) {
+                    // Remove lockdown shield once they reach slide 3
+                    document.getElementById('lockdownOverlay').style.display = 'none';
                     document.getElementById('shell').classList.add('success-mode');
                 }
             }
@@ -402,6 +406,7 @@
 
         function resetAll() {
             clearInterval(timer);
+            document.getElementById('lockdownOverlay').style.display = 'none';
             document.getElementById(`slide${current}`).classList.remove('active');
             current = 1;
             document.getElementById('shell').classList.remove('success-mode');
