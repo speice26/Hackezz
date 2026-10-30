@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Security Gateway</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        body {
+            background-color: #050505;
+            color: #00ff66;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            border: 2px solid #00ff66;
+            background: rgba(0, 20, 5, 0.9);
+            box-shadow: 0 0 25px rgba(0, 255, 102, 0.3);
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .slide {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .header {
+            font-size: 14px;
+            color: #ff3333;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .blinking-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #ff3333;
+            border-radius: 50%;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.2; }
+            100% { opacity: 1; }
+        }
+
+        h1 {
+            font-size: 20px;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+
+        p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #00cc55;
+        }
+
+        .terminal-box {
+            background: #000;
+            border: 1px dashed #00ff66;
+            padding: 15px;
+            font-size: 12px;
+            color: #00ff66;
+            height: 100px;
+            overflow-y: hidden;
+            position: relative;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            background: #001a09;
+            border: 1px solid #00ff66;
+            height: 20px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: #00ff66;
+            transition: width 2.5s ease-in-out;
+        }
+
+        .action-btn {
+            background: transparent;
+            border: 2px solid #00ff66;
+            color: #00ff66;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            letter-spacing: 1px;
+        }
+
+        .action-btn:hover {
+            background: #00ff66;
+            color: #000;
+            box-shadow: 0 0 15px #00ff66;
+        }
+
+        /* Slide 3 Reveal Styling */
+        .slide.reveal {
+            border-color: #00bfff;
+            color: #00bfff;
+        }
+        .slide.reveal .header {
+            color: #ff00ff;
+        }
+        .slide.reveal .blinking-dot {
+            background-color: #ff00ff;
+        }
+        .reveal-box {
+            text-align: center;
+            padding: 20px 0;
+        }
+        .reveal-box h2 {
+            font-size: 24px;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- SLIDE 1 -->
+        <div class="slide active" id="slide1">
+            <div class="header">
+                <div class="blinking-dot"></div>
+                Security Protocol Alert
+            </div>
+            <h1>UNAUTHORIZED ACCESS</h1>
+            <p>Incoming connection traced. Device signature and geolocation handshake detected from remote node.</p>
+            <div class="terminal-box">
+                > Initializing secure socket...<br>
+                > Tracing IP route: 192.168.43.1<br>
+                > Status: WAITING FOR USER AUTHORIZATION...
+            </div>
+            <button class="action-btn" onclick="nextSlide()">Authorize Device</button>
+        </div>
+
+        <!-- SLIDE 2 -->
+        <div class="slide" id="slide2">
+            <div class="header">
+                <div class="blinking-dot"></div>
+                System Override in Progress
+            </div>
+            <h1>EXTRACTING DATA</h1>
+            <p>Bypassing device encryption and accessing local cache memories...</p>
+            <div class="terminal-box" id="matrixLog">
+                > Accessing Instagram session cookies...<br>
+                > Dumping gallery thumbnails...<br>
+                > Initializing front camera stream...
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <button class="action-btn" id="btn2" style="display:none;" onclick="nextSlide()">Decrypt Final Payload</button>
+        </div>
+
+        <!-- SLIDE 3 (THE REVEAL) -->
+        <div class="slide reveal" id="slide3">
+            <div class="header">
+                <div class="blinking-dot"></div>
+                Prank Executed Successfully
+            </div>
+            <div class="reveal-box">
+                <h2>GOTCHA! 😄</h2>
+                <p>Relax, your phone is completely safe! You've just been officially pranked by instaz user "anfal ahmed"😅.</p>
+            </div>
+            <button class="action-btn" style="border-color: #00bfff; color: #00bfff;" onclick="resetPrank()">Replay Prank</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+
+        function nextSlide() {
+            document.getElementById(`slide${currentSlide}`).classList.remove('active');
+            currentSlide++;
+            
+            const nextElement = document.getElementById(`slide${currentSlide}`);
+            if (nextElement) {
+                nextElement.classList.add('active');
+                
+                // If we enter slide 2, trigger the auto progress bar animation
+                if (currentSlide === 2) {
+                    setTimeout(() => {
+                        document.getElementById('progressBar').style.width = '100%';
+                    }, 200);
+
+                    // Show the button after the progress bar finishes filling
+                    setTimeout(() => {
+                        document.getElementById('btn2').style.display = 'block';
+                        document.getElementById('matrixLog').innerHTML += '<br>> [SUCCESS] Target acquired! Ready.';
+                    }, 2600);
+                }
+            }
+        }
+
+        function resetPrank() {
+            document.getElementById(`slide${currentSlide}`).classList.remove('active');
+            currentSlide = 1;
+            document.getElementById('slide1').classList.add('active');
+            document.getElementById('progressBar').style.width = '0%';
+            document.getElementById('btn2').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
